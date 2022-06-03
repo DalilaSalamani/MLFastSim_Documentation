@@ -6,15 +6,15 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'ML4Sim', 
+  title: 'g4fastsim', 
   tagline: 'Machine Learning for Fast Shower Simulation in High Energy Physics',
-  url: 'https://your-docusaurus-test-site.com',
+  url: 'https://g4fastsim.web.cern.ch',
   baseUrl: '/',
   onBrokenLinks: 'ignore', 
   onBrokenMarkdownLinks: 'warn', 
   favicon: 'img/favicon.ico',
   organizationName: 'CERN', 
-  projectName: 'ML4Sim', 
+  projectName: 'g4fastsim', 
   presets: [
 
 
@@ -45,7 +45,7 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: 'ML4Sim',
+        title: 'g4fastsim',
         logo: {
           alt: 'Logo',
           src: 'img/logo.png', 
@@ -57,11 +57,33 @@ const config = {
             position: 'left',
             label: 'Get started',
           },
+          {
+            type: 'doc',
+            docId: 'ml_workflow',
+            position: 'left',
+            label: 'ML fast simulation',
+          },
+          {
+            type: 'doc',
+            docId: 'G4_Inference/from_training_to_inference',
+            position: 'left',
+            label: 'Inference within Geant4',
+          },
           /** {to: '/blog', label: 'Blog', position: 'left'}, */
           /**{to: '/help', label: 'Help', position: 'left'},  to add new item */
           {
             href: 'https://github.com/DalilaSalamani/ML4Sim_Documentation.git',
-            label: 'GitHub',
+            label: 'Webpage GitHub',
+            position: 'right',
+          },
+          {
+            href: 'https://github.com/DalilaSalamani/MLFastSim',
+            label: 'ML tools GitHub',
+            position: 'right',
+          },
+          {
+            href: 'https://gitlab.cern.ch/azaborow/geant4_par04',
+            label: 'Par04 GitLab',
             position: 'right',
           },
         ],
@@ -76,6 +98,14 @@ const config = {
                 label: 'Get started',
                 to: '/docs/intro',
               },
+              {
+                label: 'ML fast simulation',
+                to: '/docs/ml_workflow',
+              },
+              {
+                label: 'Inference within Geant4',
+                to: '/docs/G4_Inference/from_training_to_inference',
+              },
             ],
           },
           {
@@ -89,18 +119,30 @@ const config = {
                 label: 'Mattermost',
                 href: 'https://mattermost.web.cern.ch/ml4sim/channels/town-square',
               },
+              {
+                label: 'CaloChallenge',
+                  href: 'https://calochallenge.github.io/homepage/',
+              },
             ],
           },
           {
-            title: 'More',
+            title: 'Useful links',
             items: [
               /** {
                 label: 'Blog',
                 to: '/blog',
               },*/
               {
-                label: 'GitHub',
+                label: 'Webpage GitHub',
                 href: 'https://github.com/DalilaSalamani/ML4Sim_Documentation.git',
+              },
+              {
+                label: 'ML tools GitHub',
+                href: 'https://github.com/DalilaSalamani/MLFastSim',
+              },
+              {
+                label: 'Par04 GitLab',
+                href: 'https://gitlab.cern.ch/azaborow/geant4_par04',
               },
             ],
           },

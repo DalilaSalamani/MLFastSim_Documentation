@@ -8,25 +8,25 @@ const FeatureList = [
     Svg : require('../../static/img/fullsim4.svg').default,
     description: (
       <>
-        Everything you need to start with Machine Learning for fast simulation!
+        Everything you need to understand how to start with Machine Learning for fast simulation!
       </>
     ),
   },
   {
-    title: 'Full simulation',
-    Svg: require('../../static/img/showersimulation.svg').default,
-    description: (
-      <>
-        Learn about Geant4 and full simulation
-      </>
-    ),
-  },
-  {
-    title: 'Fast simulation',
+    title: 'Fast shower simulation',
     Svg: require('../../static/img/fastsim4.svg').default,
     description: (
       <>
-        Learn about fast simulation
+        Description of fast shower simulation with machine learning tools. Have a look to check our recent results!
+      </>
+    ),
+  },
+  {
+    title: 'Inference within Geant4',
+    Svg: require('../../static/img/showersimulation.svg').default,
+    description: (
+      <>
+          Learn about integration of our tools with Geant4, a standard toolkit for full simulation studies.
       </>
     ),
   },
