@@ -10,9 +10,9 @@ This page summarizes the main VAE trainings and validations starting from a sing
 
 ### Energy conditioning 
 
-Simulating showers using FastV started with investigating and exploring the performance on a single calorimeter geometry. The VAE model is trained on eletron particle showers. The detector considered is a homogeneous cylinder of lead (PBWO4). It is segmented along **(r,&phi;,z)** to create a readout geometry in the cylindrical coordinates with a segmentation of (24,24,24) in (r,&phi;,z). The model is conditonned on the energy of the incident particle. In this training, the incident energies are generated in a continious range from 1 GeV to 100 GeV. 
+Simulating showers using the VAE model (FastV) started with investigation and exploration of its performance when trained on a single calorimeter geometry. FastV is trained on electron showering in a homogeneous cylinder of lead (PBWO4). Detector is segmented along **(r,&phi;,z)** to create a readout geometry in the cylindrical coordinates with a segmentation of (24,24,24) in (r,&phi;,z). The model is conditonned on the energy of the incident particle. In this training, the incident energies are sampled from a uniform distribution from 1 GeV to 100 GeV. 
 
-The next training consisted of increasing the granularity of the segmentation. In fact, the **(r,&phi;,z)** segementation is more granular than the previous datasets with 50,48,120 for r, &phi; and z respectively.  This demonstrates the learning potential of this model with a highly granular input.  The VAE model is trained on the same particle type and the calorimeter geometry as previously. The energy range is also extended to 500 GeV using discrete energy points.
+The next training consisted of increasing the granularity of the segmentation to **(r,&phi;,z) ** = (50,48,120).  This demonstrated the learning potential of this model with a highly granular input.  The VAE model is trained on the same particle type and the calorimeter geometry as previously. The energy range is also extended to 500 GeV using discrete energy points.
 The gif below shows the longitudinal profile for different energies going from 10 GeV to 500 GeV.
 
 ![](/img/ML_Model/Training/PBWO4Geo_50_48_120_CondE/LongProf_120_layers.gif)
@@ -23,7 +23,7 @@ The gif below shows the transverse profile for different energies going from 10 
 
 #### Extrapolation power
 
-One of the key features of a generative model is the capacity to infer distributions of unseen data points during the training. Unseen data points refer to showers originating from particle energies different from the range of training. In the figzres below we can see longitudinal and transverse profiles of 0.5 GeV and 600 GeV which are extrapolated values to the energy range of training (1GeV-500GeV).
+One of the key features of a generative model is the capacity to infer distributions of unseen data points during the training. Unseen data points refer to showers originating from particle energies different from the range of training. In the figures below we can see longitudinal and transverse profiles of 0.5 GeV and 600 GeV which are extrapolated values to the energy range of training (1 GeV-500 GeV).
 
 ![](/img/ML_Model/Training/PBWO4Geo_50_48_120_CondE/extrapolTest_05GeV.png)
 
@@ -31,13 +31,13 @@ One of the key features of a generative model is the capacity to infer distribut
 
 ### Energy and angle conditioning 
 
-The next step towards building a generalizable generative model is to condition on the indicent angle of incoming particles. For that, the calorimeter used is built using PBWO4 geometry with a segmentation of (24,24,24) in (r,&phi;,z). Discrete energy points are considered in the range from 1 GeV to 1 TeV. 
+The next step towards building a generalizable generative model is to condition on the indicent angle of incoming particles. For that study, the calorimeter used is built using PBWO4 geometry with a segmentation of (24,24,24) in (r,&phi;,z). Discrete energy points are considered in the range from 1 GeV to 1 TeV. 
 
 ![](/img/ML_Model/Training/incident_angles_PBW04Geo.png)
 
 The angles range from 0&deg; to 90&deg; in a step of 10&deg; corresponding to the arrows from yellow to blue as shown in the figure above.
 
-The longitudinal and lateral profiles are shown in the next two plots where we can see a good agreement to the full simulation. 
+The longitudinal and lateral profiles are shown in the next two plots where we can see a good agreement to the full simulation. Those results are for 0&deg incident angle. The accuracy of the model deteriorates in this example with increassing angle because the larger the angle the coarser the shower (particle deposits energy in less cells).
 
 ![](/img/ML_Model/Training/PBWO4_Geo_24_24_24_CondE_A/LongProf_60GeV_0.png) | ![](/img/ML_Model/Training/PBWO4_Geo_24_24_24_CondE_A/TransProf_60GeV_0.png)
 
@@ -51,12 +51,11 @@ More plots and details are available in this **[notebook](https://gitlab.cern.ch
 
 ## Multiple geometries
 
-The model in this case is tasked to learn to reconstruct showers coming from different calorimeter geometries. At first, the model learns to reconstruct showers using two simplified geometries of lead-tungestate and silicon-tungestung. The model learns p(x|e,a,g), where **(e,a,g)=(energy,angle,geometry)** 
+The model in this case is tasked to learn to reconstruct showers coming from different calorimeter geometries. At first, the model learns to reconstruct showers using two simplified (idealized) geometries of lead-tungestate (PbWO4) and silicon-tungsten (SiW). The model learns p(x|e,a,g), where conditions **(e,a,g)=(energy,angle,geometry)** 
 
 ### Multi-task learning
 
-In the multi-task learning, the model is trained on a fixed number of tasks (calorimeter geometries in our case) and it can be evaluated only on the same tasks. The multi-task VAE model is trained on showers coming from the two simplified geometries lead-tungestate (PBW04) and silicon-tungestung (SiW). This conditional VAE model of this step is used to demonstrate how to use ML inference in Geant4. **[Par04](https://gitlab.cern.ch/geant4/geant4/-/tree/master/examples/extended/parameterisations/Par04)** is a Geant4 example which demonstrates how to infer energies using the trained VAE model. More details on the example are given in [Geant4 section](/docs/G4_Inference/G4_examples).  
-
+In the multi-task learning, the model is trained on a fixed number of tasks (calorimeter geometries in our case) and it can be evaluated only on the same tasks. The multi-task VAE model is trained on showers coming from the two simplified geometries lead-tungestate (PBW04) and silicon-tungesten (SiW). This conditional VAE model of this step is used to demonstrate how to use ML inference in Geant4. **[Par04](https://gitlab.cern.ch/geant4/geant4/-/tree/master/examples/extended/parameterisations/Par04)** is a Geant4 example which demonstrates how to infer energies using the trained VAE model. More details on the example are given in [Geant4 section](/docs/G4_Inference/G4_examples).  
 
 ### Meta-learning
 
@@ -66,8 +65,7 @@ In this section, we show some results of **MetaHEP**, the first application of t
 
 Let θ denote the initial model parameters, and t a task from the set of tasks. In our case a task corresponds to learning to simulate showers from a single detector geometry. Different geometries correspond to different tasks. For a randomly sampled task t, the learning minimizes **E<sub>t</sub>[L<sub>t</sub>(U<sup>k</sup><sub>t</sub>(&theta;))]**, where L<sub>t</sub> represents the loss of the task t, k is the number of steps or updates and U denotes the updating operator such as gradient descent. Reptile is an iterative algorithm which starts by sampling a task from the distribution of tasks, trains on the task, and then moves weights of the model towards the trained weights. 
 
-
-The full simulation samples are showers of electrons generated with an energy range from 1 GeV to 1 TeV (in powers of 2) and angles from 50$\degree$ to 90&deg; (in a step of 10&deg;). Entrance angle of 90&deg;means perpendicular to the z-axis. The used segmentation is (r,&phi;,z)=(18,50,45), i.e, each shower has 18x50x45 energies. Ten thousand particle showers are simulated for each primary particle energy and angle. In order to demonstrate that the model can learn from a small amount of datasets, only 30% of the available statistics (for each energy and angle) are used for the training. 
+The full simulation samples are showers of electrons generated with an energy range from 1 GeV to 1 TeV (in powers of 2) and angles from 50$\degree$ to 90&deg; (in a step of 10&deg;). Entrance angle of 90&deg;means perpendicular to the z-axis. The used segmentation is (r,&phi;,z)=(18,50,45), i.e, each shower has 18x50x45 energies. Ten thousand particle showers are simulated for each primary particle energy and angle. In order to demonstrate that the model can learn from a small amount of datasets, only 30% of the available statistics (for each energy and angle) are used for the training. Sample used in this studies is published on [zenodo](https://zenodo.org/record/6082201).
 
 
 #### Validation on a meta-training calorimeter geometry
@@ -91,9 +89,9 @@ The strength of the MetaHEP approach is best visible in comparison to a ``tradit
 ![](/img/ML_Model/Training/Meta_learning_Siw_SciPb_Pb_e-/AdaptationVsTradTraining.png)
 
 
-#### Fast adaptation with a real calorimeter geometry
+#### Fast adaptation with a realistic calorimeter geometry
 
-The second test of MetaHEP capabilities is done on the SiW FCC-ee detector, which is very different from the other three detectors considered so far. As it is a detector with realistic layout, it is much more complicated, and more importantly further from the detectors that were used in the training. For the adaptation to this fourth detector, the weights of the model are first initialized with the meta-knowledge and the adaptation step is tested every 10 steps up to 2000 adaptation steps. Compared to the idealised PbWO4 calorimeter, the number of adaptation steps to get a very good agreement with the full simulation is almost 3 times higher. The main origin of this difference is justified by the fact that it is a more complex geometry, and further from the detectors used for training, therefore more steps are needed. In fact, the figures below show that with 1000 steps of adaptation the model is able to well reproduce the longitudinal and the lateral profiles. 
+The second test of MetaHEP capabilities is done on the SiW FCC-ee detector, which is very different from the other three detectors considered so far. As it is a detector with realistic layout, it is much more complicated, and more importantly further from the detectors that were used in the training. Detectors used for training were cylinders, while FCC-ee SiW detectors uses flat sensors distributed on octagon in the transverse cross section. For the adaptation to this fourth detector, the weights of the model are first initialized with the meta-knowledge and the adaptation step is tested every 10 steps up to 2000 adaptation steps. Compared to the idealised PbWO4 calorimeter, the number of adaptation steps to get a very good agreement with the full simulation is almost 3 times higher. The main origin of this difference is justified by the fact that it is a more complex geometry, and further from the detectors used for training, therefore more steps are needed. In fact, the figures below show that with 1000 steps of adaptation the model is able to well reproduce the longitudinal and the lateral profiles. 
 
 ![](/img/ML_Model/Training/Meta_learning_FCC-ee/FCC-ee_Long_E64_A90_1000.png)
 ![](/img/ML_Model/Training/Meta_learning_FCC-ee/FCC-ee_LatPro_E64_A90_1000.png)

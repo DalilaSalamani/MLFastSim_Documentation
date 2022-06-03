@@ -6,11 +6,17 @@ sidebar_position: 2
 
 ## Par04
 
-**[Par04](https://gitlab.cern.ch/geant4/geant4/-/tree/master/examples/extended/parameterisations/Par04)** is a Geant4 example which demonstrates how to use ML techniques for the fast simulation of calorimeters, and how to incorporate inference libraries into C++ framework. The example depends on external libraries used for the ML inference. Currently, **[LWTNN](https://github.com/lwtnn/lwtnn)** and **[ONNXRuntime](https://github.com/microsoft/onnxruntime)** libraries can be used.
+**Par04** is a Geant4 example which demonstrates how to use ML techniques for the fast simulation of calorimeters, and how to incorporate inference libraries into C++ framework. The example depends on external libraries used for the ML inference. Currently, **[LWTNN](https://github.com/lwtnn/lwtnn)** and **[ONNXRuntime](https://github.com/microsoft/onnxruntime)** libraries can be used.
+
+Useful links:
+- [latest Geant4 release](https://gitlab.cern.ch/geant4/geant4/-/tree/master/examples/extended/parameterisations/Par04) - snapshot of Par04 in official release;
+- [development repository of Par04](https://gitlab.cern.ch/azaborow/geant4_par04) - conatins more recent changes, to be used for development;
+- [Geant4 user guide](https://geant4-userdoc.web.cern.ch/UsersGuides/ForApplicationDeveloper/html/Examples/extended/Par04.html#par04);
+
 
 ### Calorimeter setup
 
-The calorimeter in this example, is a setup of concentric cylinders of layers. Each layer consists of active and passive material (or just active material for homogeneous calorimeters). Energy deposits are scored in the detector using the cylindrical readout structure, centred around the particle momentum. In this example two detector geometries are used SiW and SciPb with a very granular segmentation (r,&phi;,z)=(18,50,45) described in the calorimeter setup and mesh definition of this page. 
+The calorimeter in this example is a setup of concentric cylinders of layers. Each layer consists of passive and active material (or just active material for homogeneous calorimeters). Energy deposits are scored in the detector using the cylindrical readout structure, centred around the particle momentum, as explained in [Dataset description](docs/ml_workflow#dataset-description). In this example 90 layers of 1.4mm of W as absorber and 0.3 mm of active material are defined, with a very granular readout segmentation (r,&phi;,z)=(18,50,45).
 
 Detector and readout (mesh) used in the example macros are configured with following commands:
 
@@ -23,7 +29,7 @@ Detector and readout (mesh) used in the example macros are configured with follo
 /Par04/detector/setAbsorber 1 G4_Si 0.3 mm true
 ## 2.325 mm of tungsten =~ 0.25 * 9.327 mm = 0.25 * R_Moliere
 /Par04/mesh/setSizeOfRhoCells 2.325 mm
-## 2 * 1.4 mm of tungsten =~ 0.65 X_0
+## 2 * 1.4 mm of tungsten =~ 0.8 X_0
 /Par04/mesh/setSizeOfZCells 3.4 mm
 /Par04/mesh/setNbOfRhoCells 18
 /Par04/mesh/setNbOfPhiCells 50
@@ -32,7 +38,22 @@ Detector and readout (mesh) used in the example macros are configured with follo
 
 ### Training data
 
-The full simulation samples for the two detector geometries (**SiW** and **SciPb**) are showers of electrons generated with an energy range from 1 GeV to 1 TeV (in powers of 2) and angles from 50&deg;to 90&deg; (in a step of 10&deg;). Entrance angle of 90&deg;means perpendicular to the z-axis. Ten thousand particle showers are simulated for each primary particle energy and angle.  
+In addition to the geometry defined in the example, additional set of materials is used: scintillator and lead. Following macro contains its configuration:
+
+```bash
+/Par04/detector/setDetectorInnerRadius 80 cm
+/Par04/detector/setDetectorLength 4 m
+/Par04/detector/setNbOfLayers 45
+/Par04/detector/setAbsorber 0 G4_Pb 4.4 mm false
+/Par04/detector/setAbsorber 1 G4_POLYSTYRENE 1.2 mm true
+/Par04/mesh/setSizeOfRhoCells 4 mm
+/Par04/mesh/setSizeOfZCells 5.6 mm
+/Par04/mesh/setNbOfRhoCells 18
+/Par04/mesh/setNbOfPhiCells 50
+/Par04/mesh/setNbOfZCells 45
+```
+
+The full simulation samples for the two detector geometries (**SiW** and **SciPb**) are showers of electrons generated with an energy range from 1 GeV to 1 TeV (in powers of 2) and angles from 50&deg;to 90&deg; (in a step of 10&deg;). Entrance angle of 90&deg;means perpendicular to the z-axis. Ten thousand particle showers are simulated for each primary particle energy and angle. Those samples are published on [zenodo](https://zenodo.org/record/6082201).
 
 ### ML model 
 

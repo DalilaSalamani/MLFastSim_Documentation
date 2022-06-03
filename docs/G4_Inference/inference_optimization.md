@@ -4,7 +4,7 @@ sidebar_position: 3
 
 # Inference optimization
 
-One of the figures of merit for selecting the best performing ML fast simulation model is the one with the best accuray while keeping the memory footprint as small as possible. Advances in memory optimization techniques allow the task of inference to have a small memory footprint. Employing these techniques can result in few factors of smaller memory footprint than a non optimzed model.
+One of the figures of merit for selecting the best performing ML fast simulation model is the one with the best accuracy while keeping the memory footprint as small as possible. Advances in memory optimization techniques allow the task of inference to have a small memory footprint. Employing these techniques can result in few factors of smaller memory footprint than a non optimized model.
 
 
 ## Optimization with ONNXRuntime 
@@ -36,7 +36,7 @@ The table below shows the disk space and the memory footprint of the model using
 
 Graph optimization of a quantized model in an online mode would give:
 
-|   |  Basic optimization|  Extended mooptimizationdel |  
+|   |  Basic optimization|  Extended optimization model |  
 |---|---|---|
 |  Resident memory (MB) |  650.414        |   555.828       |  
 |  Virtual memory (MB) |    1339.22     |    1073.21     |  
@@ -56,7 +56,7 @@ The image below shows the execution profile of running a single shower simulatio
 ![](/img/Geant4_Inference/Inference_optimization/ONNX_Profile_1.png)
 
 
-If we zoom into the inference running, we can see the model run time, the sequential executtor and all the set of operations used by the model such as the **Relu** activation function (red circle), where the tool can provide us more information such as the wall duration (0.007ms) and the provider which is a CPU executor.
+If we zoom into the inference running, we can see the model run time, the sequential executor and all the set of operations used by the model such as the **Relu** activation function (red circle), where the tool can provide us more information such as the wall duration (0.007ms) and the provider which is a CPU executor.
 
 ![](/img/Geant4_Inference/Inference_optimization/ONNX_Profile_2.png)
 
