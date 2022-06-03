@@ -4,9 +4,9 @@ sidebar_position: 1
 
 # From ML training to Geant4 inference
 
-Once the model is trained, tested and validated, it is then deployed in a production framework. ML deployment involves placing this ML model into an environment where it can perform inference for fast shower simulation. This environment is Geant4. 
+Once the model is trained, tested and validated, it is then deployed in a production framework. ML deployment involves placing this ML model into an environment where it can perform inference for fast shower simulation. This environment is Geant4. As Geant4 is a toolkit commonly used for full simulation, it is already integrated into experiments' frameworks. This makes any developments done within Geant4 directly applicable in experiments.
 
-The ML model trained in a python envirnment needs to be first converted to to a format ready to use in C++. The process of model deployment in Geant4 uses external libraries used for ML inference such as LWTNN and ONNXRuntime. Fast simulation components such as an inference model are implemented. 
+The ML model trained in a python environment needs to be first converted to to a format ready to be used in C++. The process of model deployment in Geant4 uses external libraries used for ML inference such as LWTNN and ONNXRuntime. Implementation of more libraries is on-going. Fast simulation components such as an inference model are implemented and distributed with Geant4 11.0 release. 
 
 ## Inference libraries 
 
@@ -14,7 +14,7 @@ The ML model trained in a python envirnment needs to be first converted to to a 
 
 Lightweight Trained Neural Network or **[LWTNN](https://github.com/lwtnn/lwtnn)** is a C++ library to apply neural networks. It has minimal dependencies: Eigen and Boost. It loads and applies the saved model (as a JSON file) using LWTNN in C++. 
 
-After mdoel training, to save it as a format that can be used for inference in C++, it should be saved as two separate files of the architecture (in JSON) and the weights (in HDF5). This operation can be done (in Python) with:
+After model training, to save it as a format that can be used for inference in C++, it should be saved as two separate files of the architecture (in JSON) and the weights (in HDF5). This operation can be done (in Python) with:
 
 ```bash
 # save the architecture in a JSON file
@@ -67,7 +67,7 @@ Check in the next page the **[Par04 example](/docs/G4_Inference/G4_examples)** t
 
 ### Comparison between LWTNN and ONNXRuntime
 
-The table below summarizes the difference between in the two inference libraries in terms of supported ML libraries, disk space and memory footrpint when using the same model to perform inference in Geant4. 
+The table below summarizes the difference between in the two inference libraries in terms of supported ML libraries, disk space and memory footprint when using the same model to perform inference in Geant4. 
 
 
 |   |  LWTNN |  ONNXRuntime |  
@@ -85,10 +85,7 @@ The table below summarizes the difference between in the two inference libraries
 It is also possible to convert a tensorflow model into a Keras model and then use it with LWTNN
 :::
 
-For the training, the detector considered is a homogeneous cylinder of lead (PBWO4). It is segmented along (r,&phi;,z)=(24,24,24) to create a readout geometry in the cylindrical coordinates. The model is conditonned on the energy of the incident particle, where a flat energy range is considered for the training going from 1 GeV to 100 GeV. After training the same model is converted into a JSON file and into ONNX. For reference, the disk space for the weights, saved as hdf5 file, is 28.3 MB and the model's architecture, saved as a JSON file is 5.71 kB. The memory footprint of the model presented in the table represents the evaluation of the **inference in C++**. For **LWTNN**, it represents the memory used to compute the graph. For **ONNXRuntime**, it represents the memory used to run the inference session.
-
-
-
+For the training, the detector considered is a homogeneous cylinder of lead (PBWO4). It is segmented along (r,&phi;,z)=(24,24,24) to create a readout geometry in the cylindrical coordinates. The model is conditoned on the energy of the incident particle, where a flat energy range is considered for the training going from 1 GeV to 100 GeV. After training the same model is converted into a JSON file and into ONNX. For reference, the disk space for the weights, saved as hdf5 file, is 28.3 MB and the model's architecture, saved as a JSON file is 5.71 kB. The memory footprint of the model presented in the table represents the evaluation of the **inference in C++**. For **LWTNN**, it represents the memory used to compute the graph. For **ONNXRuntime**, it represents the memory used to run the inference session.
 
 
 

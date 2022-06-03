@@ -34,8 +34,7 @@ As mentioned in the workflow description, particle showers are simulated with Ge
 
 Dimensions of the physical detector layers and the mesh readout for the studied geometries are summarized in table below. The number of mesh cells has been optimized to contain on average at least 95 % of energy deposited by 1 TeV electrons.
 
-|  Detector   <td colspan=3> Detector dimensions <td colspan=3> Readout dimensions  |
-|   |  Thickness of the active material (mm) |  Thickness of the passive material (mm) |  Number of physical layers |  R | P | N |
+| Detector  |  Thickness of the active material (mm) |  Thickness of the passive material (mm) |  Number of physical layers |  R | P | N |
 |---|---|---|---|---|---|---|
 | SiW | 0.3 | 1.4| 90| 18 | 50| 45 |
 | SciPb | 1.2| 1.4| 45| 18 | 50| 45 |  
