@@ -6,7 +6,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'g4fastsim', 
+  title: 'ML4Sim', 
   tagline: 'Machine Learning for Fast Shower Simulation in High Energy Physics',
   url: 'https://g4fastsim.web.cern.ch',
   baseUrl: '/',
@@ -14,7 +14,7 @@ const config = {
   onBrokenMarkdownLinks: 'warn', 
   favicon: 'img/favicon.ico',
   organizationName: 'CERN', 
-  projectName: 'g4fastsim', 
+  projectName: 'ML4Sim', 
   presets: [
 
 
