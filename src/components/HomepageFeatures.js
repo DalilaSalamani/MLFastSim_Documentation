@@ -6,6 +6,7 @@ const FeatureList = [
   {
     title: 'Get started',
     Svg : require('../../static/img/fullsim4.svg').default,
+    link: '/docs/intro',
     description: (
       <>
         Everything you need to understand how to start with Machine Learning for fast simulation!
@@ -15,6 +16,7 @@ const FeatureList = [
   {
     title: 'Fast shower simulation',
     Svg: require('../../static/img/fastsim4.svg').default,
+    link: '/docs/ml_workflow',
     description: (
       <>
         Description of fast shower simulation with machine learning tools. Have a look to check our recent results!
@@ -24,6 +26,7 @@ const FeatureList = [
   {
     title: 'Inference within Geant4',
     Svg: require('../../static/img/showersimulation.svg').default,
+    link: 'docs/G4_Inference/from_training_to_inference',
     description: (
       <>
           Learn about integration of our tools with Geant4, a standard toolkit for full simulation studies.
@@ -32,17 +35,19 @@ const FeatureList = [
   },
 ];
 
-function Feature({Svg, title, description}) {
+function Feature({Svg, title, description, link}) {
   return (
-    <div className={clsx('col col--4')}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} alt={title} />
+      <div className={clsx('col col--4')}>
+          <a href={link}>
+              <div className="text--center">
+                  <Svg className={styles.featureSvg} alt={title} />
+              </div>
+              <div className="text--center padding-horiz--md">
+                  <h3>{title}</h3>
+                  <p>{description}</p>
+              </div>
+          </a>
       </div>
-      <div className="text--center padding-horiz--md">
-        <h3>{title}</h3>
-        <p>{description}</p>
-      </div>
-    </div>
   );
 }
 
