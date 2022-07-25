@@ -2,6 +2,6 @@
 sidebar_position: 1
 ---
 
-# Python pipeline
+# Training pipeline
 
 **This page is under construction**
