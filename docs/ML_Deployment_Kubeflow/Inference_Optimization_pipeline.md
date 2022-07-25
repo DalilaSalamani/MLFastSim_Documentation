@@ -2,6 +2,6 @@
 sidebar_position: 2
 ---
 
-# C++ pipeline
+# Inference Optimization pipeline
 
 **This page is under construction**
