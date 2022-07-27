@@ -311,10 +311,10 @@ The benchmark component is built for comparing the output of different `Par04` r
 > :warning: If you are running `benchmark.py` as a standalone script, make sure the output `.root` filenames of Full Sim and Fast Sim(s) is same and both are in different folders.
 > ```
 > .
-├── FastSim
-│   └── output.root
-└── FullSim
-    └── output.root
+> ├── FastSim
+> │   └── output.root
+> └── FullSim
+>     └── output.root
 > ```
 
 The output of the benchmark component is a set of plots which will help with comparison between Full Sim and Fast Sim(s) as well as a `.json` file which will contain Jensen Shannon Divergence values for different physics quantity histograms.
