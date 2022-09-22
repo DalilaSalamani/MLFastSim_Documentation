@@ -58,7 +58,8 @@ Following steps would help in creating a custom image for a component
 > ```commandline
 > ENV DEBIAN_FRONTEND=noninteractive
 > RUN apt-get -qq update && \
->    apt-get -yqq install libpam-krb5 krb5-user && \
+>    apt-get -yqq install libpam-krb5![Docker_Setup](https://user-images.githubusercontent.com/43180442/191730485-800a0008-105e-411d-9c38-e021605cfa5b.png)
+ krb5-user && \
 >    apt-get -yqq clean && \
 >    apt-get install -y --no-install-recommends \
 >        ca-certificates bash-completion tar less \
