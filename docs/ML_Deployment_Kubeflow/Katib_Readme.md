@@ -14,7 +14,7 @@
 - The Katib Experiments will soon be visible on the AutoML Experiments
 
 ### Understanding Katib YAML
-For this section we are going to use the Katib YAML from [here](https://gitlab.cern.ch/gkohli/geant4-kubeflow-pipeline/-/blob/master/katib.yaml)
+For this section we are going to use the Katib YAML from [here](https://gitlab.cern.ch/fastsim/kubeflow/geant4-kubeflow-pipeline/-/blob/master/katib.yaml)
 as a reference. 
 
 
@@ -44,11 +44,11 @@ Following steps would help in creating a custom image for a component
 
 `STEP1`: Open VS Code and add your training script
 
-`STEP2`: Get the `krb5.conf` file from the [repo](https://gitlab.cern.ch/gkohli/geant4-kubeflow-pipeline/-/blob/master/training_docker/krb5.conf)
+`STEP2`: Get the `krb5.conf` file from the [repo](https://gitlab.cern.ch/fastsim/kubeflow/geant4-kubeflow-pipeline/-/blob/master/training_docker/krb5.conf)
 
 `STEP3`: Refactor the training script to accept arguments through args parser
 
-> For reference our Dockerized Model Setup and Training can be found [here](https://gitlab.cern.ch/gkohli/geant4-kubeflow-pipeline/-/blob/master/training_docker/main.py)
+> For reference our Dockerized Model Setup and Training can be found [here](https://gitlab.cern.ch/fastsim/kubeflow/geant4-kubeflow-pipeline/-/tree/master/training_docker)
 
 `STEP4`: Create a Dockerfile
 
@@ -58,8 +58,7 @@ Following steps would help in creating a custom image for a component
 > ```commandline
 > ENV DEBIAN_FRONTEND=noninteractive
 > RUN apt-get -qq update && \
->    apt-get -yqq install libpam-krb5![Docker_Setup](https://user-images.githubusercontent.com/43180442/191730485-800a0008-105e-411d-9c38-e021605cfa5b.png)
- krb5-user && \
+>    apt-get -yqq install libpam-krb5 krb5-user && \
 >    apt-get -yqq clean && \
 >    apt-get install -y --no-install-recommends \
 >        ca-certificates bash-completion tar less \
@@ -80,18 +79,31 @@ Following steps would help in creating a custom image for a component
 
 `STEP11`: Your script is now Dockerized and can be found in the gitlab registry under your repo
 
+### Refactoring training script for Katib 
+- To understand the training module refactored into docker image for katib, observe the [model_setup](https://gitlab.cern.ch/fastsim/kubeflow/geant4-kubeflow-pipeline/-/blob/master/training_docker/main.py) function.
+- The function is a standalone module which is communicated via args parser through main()
+- The Katib YAML digests the image of this script and attaches to the parameters via the args parser
+- This can be observed in the [Katib YAML template](https://gitlab.cern.ch/fastsim/kubeflow/geant4-kubeflow-pipeline/-/blob/master/katib.yaml) from the repo. Here the `--lr` and `--batch_size` are being tuned through Katib
 
 ### Integrating Katib into Kubeflow Pipeline
 
 ![ Model Training Setup with KATIB](Images/Docker_Setup.png)
 
 The Image above explains the Setup of Katib when we want to execute it from inside our Kubeflow Pipeline.
-Katib and the pipeline we runs on different pods. To establish a communication the KATIB Pod is initiated from inside the 
+Katib and the pipeline we run on different pods. To establish a communication the KATIB Pod is initiated from inside the 
 Kubeflow Pipeline. The Component waits for Katib to complete its execution and yield the best model.
 The Best model is then extracted and passed onto the further components of the pipeline.
-To understand the execution please checkout the preparation of a KATIB Component from inside a Kubeflow Pipeline [here](https://gitlab.cern.ch/gkohli/geant4-kubeflow-pipeline/-/blob/master/pipeline_components/katib_setup.py).
+To understand the execution please check out the preparation of a KATIB Component from inside a Kubeflow Pipeline [here](https://gitlab.cern.ch/fastsim/kubeflow/geant4-kubeflow-pipeline/-/blob/master/pipeline_components/katib_setup.py).
 
 #### Features of the created Katib Setup
 - Automatically submits the YAML file to the Kubeflow Dashboard and create the KATIB Pods without user interference
 - The code refactors the KATIB Template created during runtime and thus provides smoother execution of the pipeline
 - Selects the Best model from all the experiments and delete the remaining model checkpoints
+
+_The Katib Results looks as follows:_
+
+![img.png](Images/katib_trial_visual.png)
+
+_The Kubeflow Dashboard also provides a Tabular presentation of experiment details:_
+
+![img.png](Images/trials_tabular_katib.png)
