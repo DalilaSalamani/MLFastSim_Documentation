@@ -22,11 +22,13 @@ Below image represents an overview of the approach taken to build inference opti
 ## KubeFlow Pipeline
 
 The pipeline can be found on [ml.cern.ch](https://ml.cern.ch) under the name of `Geant4-Model-Optimization-Pipeline`. 
-![](/img/ML_Deployment/Kubeflow_Inference_Optimization_Pipeline/Kubeflow_inference_optimization_pipeline.jpg)
+![](/img/ML_Deployment/Kubeflow_Inference_Optimization_Pipeline/Complete-pipeline.svg)
 
--   `FullSimMacroHandler`, `OnnxFastSimNoEPMacroHandler` - Macro Handler components which output a macro file that gets passed to the respective `Par04`s.
--   `FullSim`, `OnnxFastSimNoEP` - `Par04`s which use Full Simulation and `ONNXRuntime` without any execution providers respectively.
--   `FullSimV/SOnnxFastSimNoEP` - Benchmark component that takes in inputs from `FullSim` and `OnnxFastSimNoEP` and compares them for similarity check.
+-   `Model Loader` - Model Loader component that acts as a central reppository for non-optimized model. The model gets downloaded and stored here.
+-   `MacroHandlers` - Macro Handler components which output a macro file that gets passed to the respective `Par04`s.
+-   `Inference` - `Par04`s which use Full Simulation and `ONNXRuntime` CPU and CUDA Execution providers for inference.
+-   `Benchmark` - Benchmark component that takes in 3 .root files as input and generates comparison plots through them.
+-   `Optimization` - Optimization component that takes in non-optimized model and optimizes it.
 
 > :green_book: A memory arena is a large, contiguous piece of memory that you allocate once and then use to manage memory manually by handing out parts of that memory. To understand `arena` in relation to memory, check out this [stack overflow post](https://stackoverflow.com/questions/12825148/what-is-the-meaning-of-the-term-arena-in-relation-to-memory)
 
@@ -90,7 +92,19 @@ The pipeline can be found on [ml.cern.ch](https://ml.cern.ch) under the name of 
 * `setOVUseCompiledNetwork` - It can be used to directly import pre-compiled blobs if exists or dump a pre-compiled blob at the executable path. 
 * `setOVEnableOpenCLThrottling` - This option enables OpenCL queue throttling for GPU devices (reduces CPU utilization when using GPU).
 
-
+#### Optimization
+* `enable_cpu_optimization` - Whether to enable CPU Optimization
+* `cpu_optimization_json_url` - URL of JSON containing optimization configs to be used for CPU optimization. 
+* `cpu_optim_model_eos_save_path` - Path in EOS where to save the CPU optimized model.
+* `enable_cuda_optimization` - Whether to enable CUDA Optimization
+* `cuda_optimization_json_url` - URL of JSON containing optimization configs to be used for CUDA optimization.
+* `cuda_optim_model_eos_save_path` - Path in EOS where to save the CUDA optimized model.
+* `enable_onednn_optimization` - Whether to enable oneDNN Optimization
+* `onednn_optimization_json_url` - URL of JSON containing optimization configs to be used for oneDNN optimization.
+* `onednn_optim_model_eos_save_path` - Path in EOS where to save the oneDNN optimized model.
+* `enable_tensorrt_optimization` - Whether to enable TensorRT Optimization
+* `tensorrt_optimization_json_url` - URL of JSON containing optimization configs to be used for TensorRT optimization.
+* `tensorrt_optim_model_eos_save_path` - Path in EOS where to save the TensorRT optimized model.
 ## MacroHandler
 
 `Par04` takes in input a macro file. This macro file contains a list of commands in the order they are to be run. Normally, if we want to change a macro file we will have to change the `.mac` file, upload it to gitlab, EOS or someplace from where it will be downloaded and pass the URL in KubeFlow Run UI Dashboard. This will become a tedious process.
@@ -284,7 +298,7 @@ make install
 
 4. Go to the install directory and run:
 ```bash
-./examplePar04 -m <macro file> -k -g True -o <output filename> -do <output directory>
+./examplePar04 -g True -k -kd <detector construction macro file> -ki <inference macro file> -o <output filename> -do <output directory> -fk -f <custom fastsim inference model path> -s <optimized fastsim model save path> -p <profiling json save path>
 ```
 
 > :warning: Make sure to add path to dependencies in `PATH` and `LD_LIBRARY_PATH` respectively
@@ -292,17 +306,26 @@ make install
 Checkout [dependencies section](#dependencies) for more info on customising `Par04` for your purpose.
 
 #### Flags
-- `-m` - macro file path
-- `-k` - Whether it is kubeflow deployment or not. Adding `-k` will indicate `True`.
 - `-g` - Whether to enable GPU memory usage collection or not.
+- `-k` - Whether it is kubeflow deployment or not. Adding `-k` will indicate `True`.
+
+Below given commands will only be used when `-k` is set as the below given flags are specific to KubeFlow to make the inference component KubeFlow compatible.
+- `kd` - Path to detector construction macro.
+- `ki` - Path to inference construction macro.
 - `-o` - Name of the output file. Make sure it ends with `.root`.
 - `-do` - Path of the directory where output file will be saved.
+- `-fk` - Running fastsim or not. Setting this will mean `true`.
 
-> :warning: `-o` and `-do` will only be used when `-k` is set as these 2 flags are KubeFlow deployment specifc. They are added to make the `Par04` compatible with KubeFlow's data passing mechanism. In order to make KubeFlow component's reusable, KubeFlow recommends allowing the KubeFlow sdk to generate paths at compile time.
+Below given commands will only be used when `-k` and `-fk` is set as the below given flags are make kubeflow deployment of fastsim inference component compatible with Kubeflow pipeline.
+- `-f` - Path to `.onnx` model to use for inference.
+- `-s` - Path where optimized model created by `ONNXRuntime` session will be stored once model specified in `-f` is loaded into the session.
+- `-p` - Path where profiling json will be set. It will be used when profiling flag is set to true.
+
+> :warning: They are added to make the `Par04` compatible with KubeFlow's data passing mechanism. In order to make KubeFlow component's reusable, KubeFlow recommends allowing the KubeFlow sdk to generate paths at compile time.
 > 
 > The paths generated can or cannot be present in the docker container, so, we need to handle both the cases and when path is not present, then our code should auto generate the directories as the per the path. In order to understand KubeFlow's data passing mechanism, please refer to [this guide](https://www.kubeflow.org/docs/components/pipelines/sdk-v2/v2-component-io/#review-and-update-inputsoutputs-placeholders-if-applicable).
 > 
-> If you are using `Par04` as a standalone application, you can also use `/analysis/setFileName` in macro file to set the filename.
+> If you are using `Par04` as a standalone application, using macro file is recommended.
 
 ## Benchmark
 
@@ -351,6 +374,9 @@ python3 benchmark.py \
     --eosDirectory <EOS directory path where you want to save the files> \
     --eosSaveFolderPath <EOS folder inside the EOS directory where you want to save the output> \
     --saveRootDir <Directory path inside docker container where you want the data to be saved for further passing>
+    --bo <Whether to add 3rd plot>
+    --ipo <Path of third input directory>
+    --ep "Cpu, Optimized Cpu" or "Cpu, Cuda" etc.
 ```
 
 > :warning: If you are running `Benchmark` as a kubeflow component, use `runBenchmark.sh`. It performs Kerberos authentication for EOS access and then runs `benchmark.py`. Everytime a Kubeflow component is created it needs to authenticate itself for EOS access, it is not feasible to do it manually and `runBenchmark.sh` takes care of that.
@@ -362,4 +388,118 @@ An example plot is given below:
 
 ## Optimizations
 
-#### To be build
+Optimization contains 4 blocks - CPU, CUDA, oneDNN and TensorRT. oneDNN and TensorRT are in development. All optimization blocks follow a common structure:
+
+![](/img/ML_Deployment/Kubeflow_Inference_Optimization_Pipeline/optim-block.png)
+
+ONNXRuntime has 2 types of optimization available: `static` and `dynamic`. In `static`, the model is optimized using a representative dataset, saved and then used for inference. In `dynamic`, the model is optimized when it is loaded in ONNXRuntime and uses statistics of the input data.
+
+`dynamic` optimization thus has an extra overhead as compared to `static` optimization but, can have less accuracy drop.
+
+Currently, for CPU and CUDA optimization, `static` optimization is used. For other execution providers like oneDNN and TensorRT, either dynamic or mixed will be implemented due to the restriction placed by ONNXRuntime's design. For more info, refer this this issue: https://github.com/microsoft/onnxruntime/issues/12804
+
+Optimization component performs optimization as a 2 step process which can be mixed:
+1. Graph Optimization
+2. Quantization
+
+> :warning: When performing quantization, make sure the .onnx model has been converted from it native framework using the latest `opset`. Currently, the minimum opset requirement for quantization is 10. But, it is always better to use latest version as it supports more layers.  
+
+### Graph Optimization
+
+ONNXRuntime has 4 modes of Graph Optimization - 
+1. `DISABLE`
+2. `BASIC`
+3. `EXTENDED`
+4. `ALL`
+
+All the modes are supported in this optimization component. For more details on this mode, refer to ONNXRuntime Graph Optimization doc:
+https://onnxruntime.ai/docs/performance/graph-optimizations.html
+
+In brief, `basic` adds hardware agnostic optimizations, `extended` applies graph optimizations only to subgraphs placed on CPU, CUDA (NVIDIA GPU) and ROCm (AMD GPU) and `all` applied basic + extended + layout (hardware dependent) optimizations.  
+
+### Quantization
+
+ONNXRuntime has `INT8` quantization
+
+
+### Config JSON
+
+```json
+{
+    "strides_count": 30,  
+    "latent_vector_dim": 10,
+    "min_angle": 50,                  
+    "max_angle": 90,
+    "min_energy": 1,                          
+    "max_energy": 1024,
+    "stride": 5,   
+    "input_name": null,  
+    "optimize_model": true,                
+    "graph_optim_lvl": "all",
+    "only_graph_optim": false,                    
+    "quant_format": "QDQ",
+    "op_types_to_quantize": [],
+    "per_channel": false,  
+    "reduce_range": false,           
+    "activation_type": "int8",                
+    "weight_type": "int8",
+    "nodes_to_quantize": [],
+    "nodes_to_exclude": [],  
+    "use_external_data_format": false,             
+    "calibrate_method": "MinMax", 
+    "extra_options": {
+        "extra.Sigmoid.nnapi": false,
+        "ActivationSymmetric": false,
+        "WeightSymmetric": true,
+        "EnableSubgraph": false,
+        "ForceQuantizeNoInputCheck": true,
+        "MatMulConstBOnly": false,
+        "AddQDQPairToWeight": false,
+        "OpTypesToExcludeOutputQuantizatioin": [],
+        "DedicatedQDQPair": false,
+        "QDQOpTypePerChannelSupportToAxis": {},
+        "CalibTensorRangeSymmetric": false,
+        "CalibMovingAverage": false,
+        "CalibMovingAverageConstant": 0.01
+    },            
+    "batch_size": 10,
+    "execution_providers": ["CPUExecutionProvider"], 
+    "for_tensorrt": false                           
+}
+```
+
+#### Description
+The description for all the keys are JSON given below:
+##### Calibration Data
+- `strides_count` - Number of strides/loops to use for generating the calibration data. Useful when handling OOM issue
+- `latent_vector_dim` - Dimension of latent vectors to be generated for calibration data.
+- `min_angle` - Minimum angle for which to generate calibration data.
+- `max_angle` - Maximum angle for which to generate calibration data.
+- `min_energy` - Minimum particle energy for which to generate calibration data.
+- `max_energy` - Maximum particle energy for which to generate calibration data.
+- `stride` - Number of events to generate for each pair of [condE, condA, condGeo].
+- `batch_size` - Batch size to use when performing inference for getting calibration data output. Calibrator uses the output to generate statistics which get used downstream in quantization to ensure minimal accuracy drop possible.
+- `calibrate_method` - Calibration method / Calibrator to use. Currently, supported [`MinMax`, `Entropy`, `Percentile`]. Preferred, `MinMax` as it has less memory requirement and performs very well.
+  
+##### Graph Optimization
+- `graph_optim_lvl` - Which graph optimization lvl to use. Supported [`disable`, `basic`, `extended`, `all`].
+- `only_graph_optim` - Whether to only perform graph optimization and skip quantization.
+- `optimize_model` - Whether to perform graph optimization before quantization. Should be set to `True` even if `only_graph_optim` is set to `True`.
+  
+##### Quantization
+
+For detailed read on ONNXRuntime Quantization, refer https://onnxruntime.ai/docs/performance/quantization.html
+
+- `quant_format` - 
+- `op_types_to_quantize` - List of operations to quantize. Only the operations listed here will be quantized in the model.
+- `per_channel` - Whether to perform `per_channel` quantization or not.
+- `reduce_range` - Whether to perform `7bit` quantization or not.
+- `activation_type` - Which `INT8` quantization to perform on activations. Supported [`int8`, `uint8`]. Peferred, `int8` as it is more versatile and works on a wide array of models.
+- `weight_type` - Which `INT8` quantization to perform on model weights. Supported [`int8`, `uint8`]. Peferred, `int8` as it is more versatile and works on a wide array of models.
+- `nodes_to_quantize` - List of nodes to quantize. Specify exact node names of the .onnx model. Only the nodes present in the list will be quantized. If empty, all nodes will be quanized.
+- `nodes_to_exclude` - List of nodes to exclude. Specify exact node names of the .onnx model. Only the nodes present in the list will be exclued. If empty, no nodes will be excluded.
+- `use_external_data_format` -  Saving models > 2GB creates problems in ONNXRuntime. It is preferred to set this option to `True` if dealing with models > 2GB.
+- `extra_options` - Refer https://github.com/microsoft/onnxruntime/blob/main/onnxruntime/python/tools/quantization/quantize.py#L113
+- `for_tensorrt` - If this optimization is for tensorrt or not. If set to `True`, only the calibration table will be created. TensorRT performs it own graph optimization and quantization. Hence, TensorRT optimization can only be performed dynamically in ONNXRuntime. The path of calibration table generated can be given as input to ONNXRuntime Session, TensorRT will use this Calibration cache to optimize the model at runtime.
+
+> :warning: Optimization Config JSON can be changed as per the need but currently, these are the supported params. Any additional params added to JSON will be ignored.
