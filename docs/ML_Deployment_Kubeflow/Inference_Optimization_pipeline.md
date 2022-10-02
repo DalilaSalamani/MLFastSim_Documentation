@@ -33,9 +33,10 @@ The pipeline can be found on [ml.cern.ch](https://ml.cern.ch) under the name of 
 > :green_book: A memory arena is a large, contiguous piece of memory that you allocate once and then use to manage memory manually by handing out parts of that memory. To understand `arena` in relation to memory, check out this [stack overflow post](https://stackoverflow.com/questions/12825148/what-is-the-meaning-of-the-term-arena-in-relation-to-memory)
 
 ### Parameters
-* `fullSimJsonlUrl` - Url of FullSim Jsonl file which generates macro file for full sim inference
-* `fastSimJsonlUrl` - Url of FastSim Jsonl file which generates macro file for fast sim inference
-* `jsonlSavePath` - Path where JSONL file will be saved after downloading, inside the docker container
+* `fullSimDetectionConstructionMacUrl` - Url of FullSim .mac file for detector construction
+* `fastSimDetectionConstructionMacUrl` - Url of FastSim .mac file for detector construction
+* `fullSimInferenceJsonlUrl` - Url of FullSim Jsonl file which generates macro file (.mac) for full sim inference
+* `fastSimInferenceJsonlUrl` - Url of FastSim Jsonl file which generates macro file (.mac) for fastsim inference
 * `particleEnergy` - Energy of the particle
 * `particleAngle` - Angle of the particle.
 * `setSizeLatentVector` - Dimension of the latent vector (encoded vector in a Variational Autoencoder model)
@@ -384,7 +385,7 @@ python3 benchmark.py \
 > Before running a pipeline which requires EOS access, make sure your `krb-secret` is up-to-date and also run `kinit CERN_ID`. If you want to renew your `krb-secret` perform the steps mentioned [here](https://gitlab.cern.ch/ai-ml/examples/-/tree/master/pipelines/argo-workflows/access_eos).
 
 An example plot is given below:
-![](/img/ML_Deployment/Kubeflow_Inference_Optimization_Pipeline/transProfile_1_E_10_GeV_A_90.jpg)
+![](/img/ML_Deployment/Kubeflow_Inference_Optimization_Pipeline/transProfile_1_E_10_GeV_A_90.png)
 
 ## Optimizations
 
@@ -419,8 +420,10 @@ In brief, `basic` adds hardware agnostic optimizations, `extended` applies graph
 
 ### Quantization
 
-ONNXRuntime has `INT8` quantization
+ONNXRuntime has a very rich `INT8` quantization API. Our experiments showed considerable reduction in CPU and GPU memory usage for CPU and CUDA Execution Providers respectively with no to very little accuracy drop. Quantization is very dependent on Calirabtion data / representative data, its quality and quantity both. 
 
+![](/img/ML_Deployment/Kubeflow_Inference_Optimization_Pipeline/longProfile_1_E_10_GeV_A_90.png)
+![](/img/ML_Deployment/Kubeflow_Inference_Optimization_Pipeline/CPUResMem_E_10_GeV_A_90.png)
 
 ### Config JSON
 
@@ -471,7 +474,7 @@ ONNXRuntime has `INT8` quantization
 #### Description
 The description for all the keys are JSON given below:
 ##### Calibration Data
-- `strides_count` - Number of strides/loops to use for generating the calibration data. Useful when handling OOM issue
+- `strides_count` - Number of strides/loops to use for generating the calibration data. Useful when handling OOM issue.
 - `latent_vector_dim` - Dimension of latent vectors to be generated for calibration data.
 - `min_angle` - Minimum angle for which to generate calibration data.
 - `max_angle` - Maximum angle for which to generate calibration data.
@@ -480,6 +483,7 @@ The description for all the keys are JSON given below:
 - `stride` - Number of events to generate for each pair of [condE, condA, condGeo].
 - `batch_size` - Batch size to use when performing inference for getting calibration data output. Calibrator uses the output to generate statistics which get used downstream in quantization to ensure minimal accuracy drop possible.
 - `calibrate_method` - Calibration method / Calibrator to use. Currently, supported [`MinMax`, `Entropy`, `Percentile`]. Preferred, `MinMax` as it has less memory requirement and performs very well.
+- `execution_providers` - Execution providers to use 
   
 ##### Graph Optimization
 - `graph_optim_lvl` - Which graph optimization lvl to use. Supported [`disable`, `basic`, `extended`, `all`].
@@ -490,7 +494,7 @@ The description for all the keys are JSON given below:
 
 For detailed read on ONNXRuntime Quantization, refer https://onnxruntime.ai/docs/performance/quantization.html
 
-- `quant_format` - 
+- `quant_format` - Type of quantization format to use. Supported [`QDQ`, `QOperator`]. Perferred, `QOQ` as it gives good performance to accuracy tradeoff. ONNXRuntime suggests to use `QDQ` on x86 CPU and `QOperator` for arm64 CPU.
 - `op_types_to_quantize` - List of operations to quantize. Only the operations listed here will be quantized in the model.
 - `per_channel` - Whether to perform `per_channel` quantization or not.
 - `reduce_range` - Whether to perform `7bit` quantization or not.
@@ -499,7 +503,12 @@ For detailed read on ONNXRuntime Quantization, refer https://onnxruntime.ai/docs
 - `nodes_to_quantize` - List of nodes to quantize. Specify exact node names of the .onnx model. Only the nodes present in the list will be quantized. If empty, all nodes will be quanized.
 - `nodes_to_exclude` - List of nodes to exclude. Specify exact node names of the .onnx model. Only the nodes present in the list will be exclued. If empty, no nodes will be excluded.
 - `use_external_data_format` -  Saving models > 2GB creates problems in ONNXRuntime. It is preferred to set this option to `True` if dealing with models > 2GB.
-- `extra_options` - Refer https://github.com/microsoft/onnxruntime/blob/main/onnxruntime/python/tools/quantization/quantize.py#L113
+- `extra_options` - Refer [onnxruntime/quantization/quantize.py](https://github.com/microsoft/onnxruntime/blob/main/onnxruntime/python/tools/quantization/quantize.py#L113)
 - `for_tensorrt` - If this optimization is for tensorrt or not. If set to `True`, only the calibration table will be created. TensorRT performs it own graph optimization and quantization. Hence, TensorRT optimization can only be performed dynamically in ONNXRuntime. The path of calibration table generated can be given as input to ONNXRuntime Session, TensorRT will use this Calibration cache to optimize the model at runtime.
 
 > :warning: Optimization Config JSON can be changed as per the need but currently, these are the supported params. Any additional params added to JSON will be ignored.
+
+
+## Complete Pipeline Image
+
+![](/img/ML_Deployment/Kubeflow_Inference_Optimization_Pipeline/current_gsoc_pipeline.png)
