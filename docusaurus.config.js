@@ -69,6 +69,12 @@ const config = {
             position: 'left',
             label: 'Inference within Geant4',
           },
+          {
+            type: 'doc',
+            docId: 'MetaHEP/Step00_overview',
+            position: 'left',
+            label: 'MetaHEP',
+          },
           /** {to: '/blog', label: 'Blog', position: 'left'}, */
           /**{to: '/help', label: 'Help', position: 'left'},  to add new item */
           {
@@ -77,13 +83,8 @@ const config = {
             position: 'right',
           },
           {
-            href: 'https://github.com/DalilaSalamani/MLFastSim',
-            label: 'ML tools GitHub',
-            position: 'right',
-          },
-          {
-            href: 'https://gitlab.cern.ch/azaborow/geant4_par04',
-            label: 'Par04 GitLab',
+            href: 'https://gitlab.cern.ch/fastsim',
+            label: 'Project repositories on GitLab',
             position: 'right',
           },
         ],
@@ -105,6 +106,10 @@ const config = {
               {
                 label: 'Inference within Geant4',
                 to: '/docs/G4_Inference/from_training_to_inference',
+              },
+              {
+                label: 'MetaHEP',
+                to: '/docs/MetaHEP/Step00_overview',
               },
             ],
           },
@@ -135,14 +140,10 @@ const config = {
               {
                 label: 'Webpage GitHub',
                 href: 'https://github.com/DalilaSalamani/ML4Sim_Documentation.git',
-              },
+              }, 
               {
-                label: 'ML tools GitHub',
-                href: 'https://github.com/DalilaSalamani/MLFastSim',
-              },
-              {
-                label: 'Par04 GitLab',
-                href: 'https://gitlab.cern.ch/azaborow/geant4_par04',
+                label: 'GitLab Repositories',
+                href: 'https://gitlab.cern.ch/fastsim',
               },
             ],
           },
