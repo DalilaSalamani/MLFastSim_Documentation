@@ -9,7 +9,7 @@ const FeatureList = [
     link: '/docs/intro',
     description: (
       <>
-        Everything you need to understand how to start with Machine Learning for fast simulation!
+        What you need to understand how to start with Machine Learning for fast simulation!
       </>
     ),
   },
@@ -30,6 +30,16 @@ const FeatureList = [
     description: (
       <>
           Learn about integration of our tools with Geant4, a standard toolkit for full simulation studies.
+      </>
+    ),
+  },
+  {
+    title: 'Use MetaHEP in your simulation',
+    Svg: require('../../static/img/showersimulation.svg').default,
+    link: 'docs/MetaHEP/Step00_overview',
+    description: (
+      <>
+          How to use MetaHEP, a quickly adapting fast simulation in your simulation application.
       </>
     ),
   },
