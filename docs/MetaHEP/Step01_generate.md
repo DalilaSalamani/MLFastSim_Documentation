@@ -67,14 +67,16 @@ and in FCC SW (k4SimGeant4) it is implemented in a same manner, but it takes int
 
 ## Data production
 
-Example code listed above assumes that simulation is run with **single particles**. In case multiple particles will be registered in the calorimeters within the same event, this code must be extended (e.g. by adding a primary track ID to the mesh parameters and the SD hit collections). However, this is not needed for the sake of input production to MetaHEP. Those classes are not needed to run ML model inference, which certainly requires to simulate multiple particles per event.
+Example code listed above assumes that simulation is run with **single particles**. In case multiple particles will be registered in the calorimeters within the same event, this code must be extended (e.g. by adding a primary track ID to the mesh parameters and the SD hit collections, and then adapt the translation to h5). However, this is not needed for the sake of input production to MetaHEP. Those classes are not needed to run ML model inference, which certainly requires to simulate multiple particles per event (realistic events).
 
 Data samples that need to be produced for the MetaHEP adaptation are the following:
-- single electron of photon events (seperate model is used for photons, and seperate one for electrons)
-- discrete energy spectrum of incident particles. A pre-training data included 11 samples for energies $E=2^n,~n=0,..,10$ so those values are recommended (in the energy range interesting for the user)
-- discrete angle spectrum of incident particles. A pre-training data included samples from $50^\circ$ to $90^\circ$, with a $10^\circ$ step.
-- 1'000 events per single-energy single-angle data sample
+- single electron or photon events (seperate model is used for photons, and seperate one for electrons, but this could also be a condition parameter)
+- discrete or continous energy spectrum of incident particles. A pre-training data included discrete spectrum with 11 samples for energies $E=2^n,~n=0,..,10$ so those values are recommended (in the energy range interesting for the user)
+- discrete angle spectrum of incident particles. A pre-training data included samples from $50^\circ$ to $90^\circ$, with a $10^\circ$ step. This should also depend on the need of the experiment.
+- at least 1'000 events per single-energy single-angle data sample (should be enough to adapt the model)
 
 ## Data output format
 
-Produced data will be labeled with particle type, energy, and incident angle, and contain energy deposits in a cylindircal mesh. Data may be stored in different formats, depending on the used software framework. More details on the input format and possible translation tools is described in Step 2.
+Produced data in the simulation is stored in a ROOT file. It must be labeled with particle type, energy, and incident angle (e.g. in the filename), and contain energy deposits in a cylindircal mesh. Data may be stored in different formats, depending on the used software framework. ML adaptation requires the shower data to be in a format of HDF5 file. For this reason the data translation script was implemented. It needs to be run first, prior to using that data in the adaptation:
+
+- [root2h5.py](https://gitlab.cern.ch/fastsim/par04/-/blob/master/training/root2h5.py)
