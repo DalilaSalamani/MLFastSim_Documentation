@@ -24,5 +24,12 @@ Preparation of input samples can be achieved in two ways:
 
 2) [experimental] Re-use of existing simulation datasets and mapping them into the cylindrical mesh. This method is not fully tested and can strongly depend on the difference between the granularity of the existing dataset and the granularity of the mesh. It may lead to lower accuracy as the output of the ML model will contain entries in the high granularity mesh. It allows however, to quickly progress to Step 2.
 
-## Step 2: Adapt a pre-trained model
-## Step 3: Use ML fast shower simulation
+## [Step 2: Adapt a pre-trained model](Step02_adapt)
+
+While any model can be trained from scratch (including the VAE model released with Par04), there is a benefit of using a pretrained model, which is speed. It takes much less time to adapt the model.
+
+If no changes were made to the size of the cylindrical mesh (number of voxels, because size of each dimension should change according to the radiation length and the Moliere radius), the meta learning approach may be applied. Adaptation of the pre-trained model is described in this section.
+
+## [Step 3: Use ML fast shower simulation](Step03_use)
+
+Inference in the C++ framework can me applied using the classes prepared for Par04. Currently ONNX runtime, lwttn, and Torch are supported.
