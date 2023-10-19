@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # MetaHEP
 
-MetaHEP is an ML-aided fast shower simulation that is able to adapt quickly to a new geometry. More details can be found in [ACAT 2021 proceedings](TODO:add) and [a publication](TODO:add). This is a manual for users that want to use MetaHEP on their detectors.
+MetaHEP is an ML-aided fast shower simulation that is able to adapt quickly to a new geometry. More details can be found in [the publication (10.1016/j.physletb.2023.138079)](https://doi.org/10.1016/j.physletb.2023.138079). This instruction is a manual for users that want to use MetaHEP on their detectors.
 
 Currently we provide a pre-trained VAE model with high granularity, pre-trained on two datasets [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6082201.svg)](https://doi.org/10.5281/zenodo.6082201).
 
