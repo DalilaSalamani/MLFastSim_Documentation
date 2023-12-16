@@ -35,7 +35,7 @@ const FeatureList = [
   },
   {
     title: 'Use MetaHEP in your simulation',
-    Svg: require('../../static/img/showersimulation.svg').default,
+    Svg: require('../../static/img/y_z.svg').default,
     link: 'docs/MetaHEP/Step00_overview',
     description: (
       <>
